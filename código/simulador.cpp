@@ -1,10 +1,23 @@
-void main (void){
+#include <string>
+using namespace std;
+
+#include <stdexcept>
+#include <iostream>
+#include <stdlib.h>
+
+#include "CamadaFisica.h"
+
+void AplicacaoTransmissora(void); 
+
+int main(void){
   
-  AplicacaoTrainsmissora();
+  AplicacaoTransmissora();
+
+  return 0; 
 
 } // fim do metodo main
 
-void AplicacaoTrainsmissora(void){
+void AplicacaoTransmissora(void){
   string mensagem;
   cout << "Digite uma mensagem:" << endl;
   cin >> mensagem;

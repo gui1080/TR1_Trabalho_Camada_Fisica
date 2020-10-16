@@ -1,3 +1,15 @@
+
+#include <string>
+using namespace std;
+
+#include <stdexcept>
+#include <iostream>
+#include <stdlib.h>
+
+
+#include "CamadaFisica.h"
+
+
 void CamadaDeAplicacaoTransmissora(string mensagem){
 
   //int quadro[] = mensagem // trabalhando com bits
@@ -12,29 +24,35 @@ void CamadaDeAplicacaoTransmissora(string mensagem){
   // cin >> letter;
   // cout << bitset<8>(letter).to_string() << endl;
 
-  CamadaFisicaTransmissora(quadro);
+  // CamadaFisicaTransmissora(quadro);
 
-} // fim do metodo CamadaDeAplicacaoTransmissora
+} // fim do metodo
 
 void CamadaFisicaTransmissora(int quadro[]){
   int tipoDeCodificacao = 1;
-  int fluxoBrutoDeBits [];
+  int fluxoBrutoDeBits[10];
 
   switch (tipoDeCodificacao){
     case 0: //codificacao binaria
-      fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoBinaria(quadro);
+      
+      //fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoBinaria(quadro);
+      
       break;
 
     case 1: //codificacao manchester
-      fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchester(quadro);
+      
+      // fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchester(quadro);
+      
       break;
 
     case 2: //codificacao manchester diferencial
-      fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(quadro);
+      // fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(quadro);
+      
       break;
+  
   } // fim do switch/case
 
-  MeioDeComunicacao(fluxoBrutoDeBits);
+  //MeioDeComunicacao(fluxoBrutoDeBits);
 
 }
 
