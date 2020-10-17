@@ -3,6 +3,7 @@
 #include <string>
 #include <stdlib.h>
 
+void converte(string mensagem, int* quadro, int pos); 
 void CamadaDeAplicacaoTransmissora(string mensagem); 
 void CamadaFisicaTransmissora(int quadro[]);
 
