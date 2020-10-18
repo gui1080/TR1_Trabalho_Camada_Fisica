@@ -10,5 +10,12 @@ void CamadaFisicaTransmissora(int* quadro);
 //int [] CamadaFisicaTransmissoraCodificacaoBinaria(int quadro[]);
 
 int* CamadaFisicaTransmissoraCodificacaoManchester(int* quadro);
+int* CamadaFisicaReceptoraDecodificacaoManchester(int* quadro); 
 
 //int [] CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int quadro[]);
+
+void MeioDeComunicacao(int* fluxoBrutodeBits); 
+
+void CamadaFisicaReceptora(int* quadro); 
+
+void CamadaDeAplicacaoReceptora(int* quadro); 
