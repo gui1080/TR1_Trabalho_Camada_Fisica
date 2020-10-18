@@ -20,7 +20,10 @@ int main(void){
 void AplicacaoTransmissora(void){
   string mensagem;
   cout << "Digite uma mensagem:" << endl;
-  cin >> mensagem;
+  //cin >> mensagem;
+  
+  getline(cin,mensagem);
+  
   // chama a proxima camada
   CamadaDeAplicacaoTransmissora(mensagem);
 }

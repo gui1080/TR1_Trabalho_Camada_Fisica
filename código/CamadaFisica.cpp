@@ -1,69 +1,70 @@
 #include <string>
-	using namespace std;
+using namespace std;
 
-	#include <stdexcept>
-	#include <iostream>
-	#include <bits/stdc++.h>
-	#include <bitset>
-	#include <stdlib.h>
+#include <stdexcept>
+#include <iostream>
+#include <bits/stdc++.h>
+#include <bitset>
+#include <stdlib.h>
 
-	#include "CamadaFisica.h"
+#include "CamadaFisica.h"
 
-	void converte(string mensagem, int quadro[], int pos){
+void converte(string mensagem, int quadro[], int pos){
 
 	int x, j, i;
 
-	bitset<8> set(mensagem[pos]);
-
-	//cout << set << endl;
-
 	j = ((pos*8)-1) + 8;
 
-  //cout << j << endl;
+	bitset<8> set(mensagem[pos]);
 
-	int novo_quadro[8];
+	if(mensagem[pos] == ' '){
 
-//	for(x=0; x<mensagem.size() ; x++){
+		// espaço, caso especial
+		cout << "Espaço supimpa."; 
+
+		set.reset(); // todos são zero
+		set.set(5, 1); // 32 == espaço
+
+	} 
+
+		//cout << set << endl;
+
+		//j = ((pos*8)-1) + 8;
+
+		//cout << j << endl;
+
+		//int novo_quadro[8];
+
+		//	for(x=0; x<mensagem.size() ; x++){
 
 	for(i = 0; i < 8 ; i++){
 
-	if(set.test(i)){
+		if(set.test(i)){
 
-	quadro[j] = 1;
+			quadro[j] = 1;
 
-	//cout << "a" << endl;
-	j--;
+			//cout << "a" << endl;
+			j--;
+		}
+		else{
+
+			quadro[j] = 0;
+
+			j--;
+		}
+
 	}
-	else{
 
-	quadro[j] = 0;
-
-	j--;
-	}
-
-	}
-	//set.reset();
-
-//	}
-
-/*
-  for(i = 0; i < 8 ; i++){
-
-  cout << quadro[i];
-
-  }
-
-  cout << endl;
-  */
+	
 	return;
 
+}
 
-	}
 
+void CamadaDeAplicacaoTransmissora(string mensagem){
 
-	void CamadaDeAplicacaoTransmissora(string mensagem){
-
-	//int quadro[] = mensagem // trabalhando com bits
+	//int quadro[] = mensagem 
+	// trabalhando com bits
 	//chama a proxima camada
 
 	// VAMOS PASSAR COM UM FOR POR CADA LETRA
@@ -80,7 +81,7 @@
 
 	int i;
 	int j;
-	int tamanho_quadro_final = 8*(mensagem.size());
+	int tamanho_quadro_final = 8*(mensagem.length());
 	int x;
 
 	cout << tamanho_quadro_final <<endl;
@@ -88,65 +89,77 @@
 	int *quadro, *letra_atual;
 	quadro = new (nothrow) int[tamanho_quadro_final];
 
-for(j = 0; j < mensagem.size(); j++){
+	for(j = 0; j < mensagem.size(); j++){
 
-  converte(mensagem, quadro, j);
+		converte(mensagem, quadro, j);
 
-  cout << mensagem[j] << " se tornou ";
+		cout << mensagem[j] << " se tornou ";
 
-  for(i = j*8; i < (j*8 + 8)  ; i++){
+		for(i = j*8; i < (j*8 + 8)  ; i++){
 
-  cout << quadro[i];
+			cout << quadro[i];
 
-  }
+		}
 
-  cout << endl;
-}
+  		cout << endl;
+	}
 
-for(j = 0; j < tamanho_quadro_final; j++){
+	for(j = 0; j < tamanho_quadro_final; j++){
 
-  cout << quadro[j];
-
-}
-cout << endl;
-/*
-	converte(mensagem, quadro, 1);
-
-	for(i = 0; i < 8 ; i++){
-
-	cout << quadro[i];
+		cout << quadro[j];
 
 	}
 
-  cout << endl;
-  */
-	//converte(mensagem, quadro, 1);
+	cout << endl;
+	/*
+		converte(mensagem, quadro, 1);
 
-	// CamadaFisicaTransmissora(quadro);
+		for(i = 0; i < 8 ; i++){
 
-	} // fim do metodo
+		cout << quadro[i];
 
-	void CamadaFisicaTransmissora(int quadro[]){
+		}
+
+	cout << endl;
+	*/
+		//converte(mensagem, quadro, 1);
+
+	CamadaFisicaTransmissora(quadro);
+
+} // fim do metodo
+
+void CamadaFisicaTransmissora(int* quadro){
+
 	int tipoDeCodificacao = 1;
-	int fluxoBrutoDeBits[10];
+
+	int tamanho_quadro = sizeof(quadro);
+
+	cout << "tamanho:" << tamanho_quadro << endl;  
+
+	cout << endl; 
+
+
+	int *fluxoBrutoDeBits;
+
+	fluxoBrutoDeBits = new (nothrow) int[2*tamanho_quadro];
 
 	switch (tipoDeCodificacao){
 	case 0: //codificacao binaria
 
-	//fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoBinaria(quadro);
+		//fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoBinaria(quadro);
 
-	break;
+		break;
 
 	case 1: //codificacao manchester
 
-	// fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchester(quadro);
+		fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchester(quadro);
 
-	break;
+		break;
 
 	case 2: //codificacao manchester diferencial
-	// fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(quadro);
+		// fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(quadro);
 
-	break;
+		break;
 
 	} // fim do switch/case
 
@@ -154,16 +167,21 @@ cout << endl;
 
 	}
 
+int* CamadaFisicaTransmissoraCodificacaoManchester(int* quadro){
+	// implementacao do algoritmo
+
+	int tamanho_quadro = sizeof(quadro); 
+
+	cout << "tamanho:" << tamanho_quadro << endl; 
+
+} // fim do metodo CamadaFisicaTransmissoraCodificacaoManchester
+
+
 	/*
 	int [] CamadaFisicaTransmissoraCodificacaoBinaria(int quadro[]){
 	// implementacao do algoritmo
 
 	} // fim do metodo CamadaFisicaTransmissoraCodificacaoBinaria
-
-	int [] CamadaFisicaTransmissoraCodificacaoManchester(int quadro[]){
-	// implementacao do algoritmo
-
-	} // fim do metodo CamadaFisicaTransmissoraCodificacaoManchester
 
 	int [] CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int quadro[]){
 	// implementacao do algoritmo
