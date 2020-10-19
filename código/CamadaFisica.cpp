@@ -204,7 +204,7 @@ void CamadaFisicaTransmissora(int quadro[])
 
 	} // fim do switch/case
 
-	//MeioDeComunicacao(fluxoBrutoDeBits);
+	MeioDeComunicacao(fluxoBrutoDeBits);
 }
 
 int *CamadaFisicaTransmissoraCodificacaoManchester(int quadro[])
@@ -529,6 +529,13 @@ void CamadaFisicaReceptora(int quadro[])
 
 		break;
 	case 2:
+		fluxoBrutoDeBits = CamadaFisicaReceptoraDecodificacaoManchesterDiferencial(quadro);
+
+		for (int j = 0; j < i; j++)
+		{
+			cout << fluxoBrutoDeBits[j];
+		}
+		cout << endl;
 
 		break;
 	}
@@ -699,4 +706,95 @@ void CamadaDeAplicacaoReceptora(int quadro[])
 void AplicacaoReceptora(string mensagem)
 {
 	cout << "A mensagem recebida foi: " << mensagem << endl;
+}
+
+int *CamadaFisicaReceptoraDecodificacaoManchesterDiferencial (int quadro[]){
+	cout << "oi\n";
+
+	int i = 0;
+
+	while (1)
+	{
+
+		if (quadro[i] == 2)
+		{
+			cout << "achei o final" << endl;
+			cout << i << endl;
+			break;
+		}
+		i++;
+	}
+
+	int tamanho_fluxo;
+	tamanho_fluxo = i;
+	cout << tamanho_fluxo << endl;
+
+	int *fluxoDecodificado;
+
+	fluxoDecodificado = new (nothrow) int[tamanho_fluxo];
+
+	int j, x;
+	x = 0;
+
+	for (int q = 0; q < i; q++)
+	{
+		cout << quadro[q];
+	}
+
+	cout << "\n";
+
+	int passado[2];
+
+	passado[0] = 0;
+	passado[1] = 1;
+
+	for (j = 0; j < tamanho_fluxo; j=j+2)
+	{
+
+		cout << quadro[j] << endl;
+
+		if (quadro[j] == 0)
+		{
+
+			fluxoDecodificado[x] = passado[0];
+			x++;
+			fluxoDecodificado[x] = passado[1];
+			x++;
+		}
+		else
+		{
+
+			if (quadro[j] == 1)
+			{
+
+				if (passado[0] == 0)
+				{
+
+					passado[0] = 1;
+					passado[1] = 0;
+
+					fluxoDecodificado[x] = 1;
+					x++;
+					fluxoDecodificado[x] = 0;
+					x++;
+				}
+
+				else if (passado[0] == 1)
+				{
+
+					passado[0] = 0;
+					passado[1] = 1;
+
+					fluxoDecodificado[x] = 0;
+					x++;
+					fluxoDecodificado[x] = 1;
+					x++;
+				}
+			}
+		}
+	}
+
+	fluxoDecodificado[tamanho_fluxo] = 2;
+
+	return fluxoDecodificado;
 }
