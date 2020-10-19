@@ -136,7 +136,7 @@ void CamadaDeAplicacaoTransmissora(string mensagem)
 void CamadaFisicaTransmissora(int quadro[])
 {
 
-	int tipoDeCodificacao = 2;
+	int tipoDeCodificacao = CODIFICACAO;
 
 	int i = 0;
 
@@ -365,9 +365,14 @@ int *CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int quadro[])
 	// 00 11 00 11 11 00 00
 	// 01 10 10 01 10 10 10
 
+	// z
 	// 0  1  1  1  1  0  1  0
 	// 00 11 11 11 11 00 11 00
-	// 01 10 01 10 01 10 01 10
+	// 01 10 01 10 01 01 10 10
+
+	// logica inversa
+
+	// 00 11 11 11 11 00 11 00
 
 	// 01 10 01 10 01 10 0
 
@@ -482,7 +487,7 @@ void CamadaFisicaReceptora(int quadro[])
 
 	cout << "recebendooooo" << endl;
 
-	int tipoDeDecodificacao = 2;
+	int tipoDeDecodificacao = CODIFICACAO;
 
 	int i = 0;
 
@@ -736,6 +741,8 @@ int *CamadaFisicaReceptoraDecodificacaoManchesterDiferencial (int quadro[]){
 	int j, x;
 	x = 0;
 
+	cout << "Quadro recebido\n"; 
+
 	for (int q = 0; q < i; q++)
 	{
 		cout << quadro[q];
@@ -753,46 +760,61 @@ int *CamadaFisicaReceptoraDecodificacaoManchesterDiferencial (int quadro[]){
 
 		cout << quadro[j] << endl;
 
-		if (quadro[j] == 0)
+		if ((quadro[j] == 0 && quadro[j+1] == 1))
 		{
+			if((passado[0] == 0 && passado[1] == 1)){
 
-			fluxoDecodificado[x] = passado[0];
-			x++;
-			fluxoDecodificado[x] = passado[1];
-			x++;
-		}
-		else
-		{
+				fluxoDecodificado[x] = 0;
+				x++;
+				fluxoDecodificado[x] = 0;
+				x++;
 
-			if (quadro[j] == 1)
-			{
+			}else if((passado[0] == 1 && passado[1] == 0)){
 
-				if (passado[0] == 0)
-				{
+				fluxoDecodificado[x] = 1;
+				x++;
+				fluxoDecodificado[x] = 1;
+				x++;
 
-					passado[0] = 1;
-					passado[1] = 0;
+				passado[0] = 0;
+				passado[1] = 1; 
 
-					fluxoDecodificado[x] = 1;
-					x++;
-					fluxoDecodificado[x] = 0;
-					x++;
-				}
-
-				else if (passado[0] == 1)
-				{
-
-					passado[0] = 0;
-					passado[1] = 1;
-
-					fluxoDecodificado[x] = 0;
-					x++;
-					fluxoDecodificado[x] = 1;
-					x++;
-				}
 			}
 		}
+
+		else if ((quadro[j] == 1 && quadro[j+1] == 0))
+			{
+				if((passado[0] == 1 && passado[1] == 0)){
+
+					fluxoDecodificado[x] = 0;
+					x++;
+					fluxoDecodificado[x] = 0;
+					x++;
+
+				}else if((passado[0] == 0 && passado[1] == 1)){
+
+					fluxoDecodificado[x] = 1;
+					x++;
+					fluxoDecodificado[x] = 1;
+					x++;
+
+					passado[0] = 1;
+					passado[1] = 0; 
+
+				}
+				
+		}	
+		
 	}
+
+	cout << "olha q top o fluxo decodificado: "<< endl;
+	
+
+	for(j = 0 ; j < tamanho_fluxo ; j++){
+		cout << fluxoDecodificado[j];  
+	}
+
+	cout << endl;
 
 	fluxoDecodificado[tamanho_fluxo] = 2;
 
