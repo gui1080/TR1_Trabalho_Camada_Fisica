@@ -7,6 +7,7 @@ using namespace std;
 #include <bitset>
 #include <stdlib.h>
 #include <array> 
+#include <cmath>
 
 #include "CamadaFisica.h"
 
@@ -133,7 +134,7 @@ void CamadaDeAplicacaoTransmissora(string mensagem){
 
 void CamadaFisicaTransmissora(int quadro[]){
 
-	int tipoDeCodificacao = 1;
+	int tipoDeCodificacao = 2;
 
  	int i = 0; 
 
@@ -159,7 +160,13 @@ void CamadaFisicaTransmissora(int quadro[]){
 	switch (tipoDeCodificacao){
 	case 0: //codificacao binaria
 
-		//fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoBinaria(quadro);
+		fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoBinaria(quadro);
+
+		cout << "Camada Fisica Transmissora: "; 
+		for(i=0 ; i < tamanho_fluxo ; i++){
+			cout << fluxoBrutoDeBits[i]; 
+		}
+		cout << endl; 
 
 		break;
 
@@ -176,15 +183,22 @@ void CamadaFisicaTransmissora(int quadro[]){
 		break;
 
 	case 2: //codificacao manchester diferencial
-		// fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(quadro);
+
+		fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(quadro);
+
+		cout << "Camada Fisica Transmissora: "; 
+		for(i=0 ; i < tamanho_fluxo ; i++){
+			cout << fluxoBrutoDeBits[i]; 
+		}
+		cout << endl; 
 
 		break;
 
 	} // fim do switch/case
 
-	MeioDeComunicacao(fluxoBrutoDeBits);
+	//MeioDeComunicacao(fluxoBrutoDeBits);
 
-	}
+}
 
 int* CamadaFisicaTransmissoraCodificacaoManchester(int quadro[]){
 	// implementacao do algoritmo
@@ -252,18 +266,172 @@ int* CamadaFisicaTransmissoraCodificacaoManchester(int quadro[]){
 } // fim do metodo CamadaFisicaTransmissoraCodificacaoManchester
 
 
-	/*
-	int [] CamadaFisicaTransmissoraCodificacaoBinaria(int quadro[]){
+
+int* CamadaFisicaTransmissoraCodificacaoBinaria(int quadro[]){
 	// implementacao do algoritmo
 
-	} // fim do metodo CamadaFisicaTransmissoraCodificacaoBinaria
+	cout << "binarior" << endl;  
 
-	int [] CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int quadro[]){
+	int i = 0; 
+
+	while(1){
+	
+		cout << quadro[i] << endl; 
+
+		if(quadro[i]==2){
+			cout << "achei o final" << endl; 
+			cout << i << endl;  
+			break; 
+		} 
+		i++; 
+	}
+
+	int tamanho_fluxo;
+	tamanho_fluxo = i*2; 
+	cout << tamanho_fluxo << endl; 
+
+	int *fluxoCodificado; 
+
+	fluxoCodificado = new (nothrow) int[tamanho_fluxo];
+
+	int j; 
+	
+	int x = 0;
+
+	for(j=0 ; j < i ; j++){
+
+		fluxoCodificado[x] = quadro[j]; 
+		x++; 
+
+		fluxoCodificado[x] = quadro[j]; 
+		x++; 
+
+	}  
+
+	fluxoCodificado[tamanho_fluxo] = 2; 
+
+	return fluxoCodificado; 
+
+} // fim do metodo CamadaFisicaTransmissoraCodificacaoBinaria
+
+	
+int* CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int quadro[]){
 	// implementacao do algoritmo
 
-	} // fim do metodo CamadaFisicaTransmissoraCodificacaoManchesterDiferencial
+	cout << "oi, manchesto diferetne " << endl; 
 
-	*/
+	int i = 0; 
+
+	while(1){
+	
+		cout << quadro[i] << endl; 
+
+		if(quadro[i]==2){
+			cout << "achei o final" << endl; 
+			cout << i << endl;  
+			break; 
+		} 
+		i++; 
+	}
+
+	int tamanho_fluxo;
+	tamanho_fluxo = i*2; 
+	cout << tamanho_fluxo << endl; 
+
+	int *fluxoCodificado; 
+
+	fluxoCodificado = new (nothrow) int[tamanho_fluxo]; 
+
+
+	int j;
+	int x = 0; 
+
+	// 0  1  0  1  1  0  0 
+	// 00 11 00 11 11 00 00
+	// 01 10 10 01 10 10 10
+
+	// 0  1  1  1  1  0  1  0
+	// 00 11 11 11 11 00 11 00
+	// 01 10 01 10 01 01 10 10
+
+	// 01 10 01 10 01 10 0
+
+	// 0  1  1  0  0  0  0  1
+	// 01 10 01 10 01 01 01 01 01 10
+
+	int passado[2];
+
+	passado[0] = 0;
+	passado[1] = 1;  
+
+	int antes = 0; 
+
+	for(j=0; j < i ; j++){
+
+		cout << quadro[j] << endl; 
+
+		if(quadro[j] == 0){
+
+			if(antes == 0){
+
+			fluxoCodificado[x] = 0;
+			x++;
+			fluxoCodificado[x] = 1;
+			x++;
+			}
+
+			if(antes == 1){
+
+			fluxoCodificado[x] = 1;
+			x++;
+			fluxoCodificado[x] = 0;
+			x++;
+
+			}
+			
+
+		}
+		else{
+
+		if(quadro[j] == 1){
+
+			if( antes == 0){
+				
+				antes = 1; 
+
+				passado[0] = 1; 
+				passado[1] = 0; 
+
+				fluxoCodificado[x] = 1;
+				x++;
+				fluxoCodificado[x] = 0;
+				x++;
+
+			}
+			if( antes == 1 ){
+
+				antes = 0; 
+
+				passado[0] = 0; 
+				passado[1] = 1;	
+
+				fluxoCodificado[x] = 0;
+				x++;
+				fluxoCodificado[x] = 1;
+				x++;			
+
+			}
+
+		}
+		}
+ 
+
+	}
+
+	return 	fluxoCodificado; 
+
+} // fim do metodo CamadaFisicaTransmissoraCodificacaoManchesterDiferencial
+
 
 void MeioDeComunicacao(int fluxoBrutodeBits[]){
 
@@ -312,7 +480,7 @@ void CamadaFisicaReceptora(int quadro[]){
 
 	cout << "recebendooooo" << endl; 
 
-	int tipoDeDecodificacao = 1; 
+	int tipoDeDecodificacao = 2; 
 
 	int i = 0; 
 
@@ -335,6 +503,13 @@ void CamadaFisicaReceptora(int quadro[]){
 
 		case 0:
 
+			fluxoBrutoDeBits = CamadaFisicaReceptoraDecodificacaoBinaria(quadro); 
+
+			for(int j = 0; j < i; j++){
+				cout << fluxoBrutoDeBits[j]; 
+			}
+			cout << endl; 
+
 			break; 
 		case 1:
 
@@ -355,6 +530,12 @@ void CamadaFisicaReceptora(int quadro[]){
 
 }
 
+int* CamadaFisicaReceptoraDecodificacaoBinaria(int quadro[]){
+
+	cout << "decod binaria" << endl; 
+
+	return quadro; 
+}
 
 int* CamadaFisicaReceptoraDecodificacaoManchester(int quadro[]){
 
@@ -447,13 +628,17 @@ void CamadaDeAplicacaoReceptora(int quadro[]){
 
 	fluxoFinal = new (nothrow) int[tamanho_mensagem_ascii]; 
 
+	int j = 0; 
+
 	for(i = 0 ; i < tamanho_quadro ; i=i+2){
 
-		fluxoFinal[i] = quadro[i]; 
+		fluxoFinal[j] = quadro[i]; 
 
-		cout << fluxoFinal[i];
+		cout << fluxoFinal[j]; // tamanho = tamanho_mensagem_ascii
 
+		j++; 
 	}
+
 
 	cout << endl; 
 
@@ -461,6 +646,48 @@ void CamadaDeAplicacaoReceptora(int quadro[]){
 
 	string mensagem; 
 
-	//AplicacaoReceptora(mensagem); 
+	int decimal = 0;
+	int y; 
+
+	cout << "tamanho do da mensagem: " << (tamanho_mensagem_ascii / 8) << endl; 
+
+	// 01111010
+
+	
+	for(i = 0; i < (tamanho_mensagem_ascii / 8) ; i++){
+
+		decimal = 0;
+
+		y = 0;
+
+		for(j = ((i*8) + 7) ; j >= (i*8) ; j--){
+
+			if(fluxoFinal[j] == 1){
+
+				decimal = decimal + pow(2, y); 
+
+			}
+
+			y++; 
+
+		}
+
+		cout << decimal << endl; 
+
+
+		mensagem.push_back((char)decimal); 
+
+	}
+	
+
+	cout<< mensagem <<endl;
+
+
+	AplicacaoReceptora(mensagem); 
 
 }
+
+void AplicacaoReceptora(string mensagem){
+	cout << "A mensagem recebida foi: " << mensagem << endl; 
+}
+
