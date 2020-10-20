@@ -11,6 +11,22 @@ using namespace std;
 
 #include "CamadaFisica.h"
 
+int find_size(int quadro[]){
+
+	int i = 0;
+	while (1)
+	{
+
+		if (quadro[i] == 2)
+		{
+			break;
+		}
+		i++;
+	}
+
+return i;
+}
+
 void converte(string mensagem, int quadro[], int pos)
 {
 
@@ -24,21 +40,9 @@ void converte(string mensagem, int quadro[], int pos)
 	{
 
 		// espaço, caso especial
-		cout << "Espaço supimpa.";
-
 		set.reset();   // todos são zero
 		set.set(5, 1); // 32 == espaço
 	}
-
-	//cout << set << endl;
-
-	//j = ((pos*8)-1) + 8;
-
-	//cout << j << endl;
-
-	//int novo_quadro[8];
-
-	//	for(x=0; x<mensagem.size() ; x++){
 
 	for (i = 0; i < 8; i++)
 	{
@@ -47,16 +51,15 @@ void converte(string mensagem, int quadro[], int pos)
 		{
 
 			quadro[j] = 1;
-
-			//cout << "a" << endl;
 			j--;
+
 		}
 		else
 		{
 
 			quadro[j] = 0;
-
 			j--;
+
 		}
 	}
 
@@ -66,9 +69,9 @@ void converte(string mensagem, int quadro[], int pos)
 void CamadaDeAplicacaoTransmissora(string mensagem)
 {
 
-	//int quadro[] = mensagem
+	// int quadro[] = mensagem
 	// trabalhando com bits
-	//chama a proxima camada
+	// chama a proxima camada
 
 	// VAMOS PASSAR COM UM FOR POR CADA LETRA
 	// CADA LETRA = 2 HEXADECIMAIS = 8 BITS
@@ -79,14 +82,11 @@ void CamadaDeAplicacaoTransmissora(string mensagem)
 	// cin >> letter;
 	// cout << bitset<8>(letter).to_string() << endl;
 
-	//int const tamanho = 8*(mensagem.size());
+	// int const tamanho = 8*(mensagem.size());
+	cout << "\033[1;34mCamada de Aplicacao Transmissora\033[0m\n";
 
-	int i;
-	int j;
+	int i, j, x;
 	int tamanho_quadro_final = 8 * (mensagem.length());
-	int x;
-
-	cout << tamanho_quadro_final << endl;
 
 	int *quadro, *letra_atual;
 	quadro = new (nothrow) int[tamanho_quadro_final];
@@ -96,109 +96,72 @@ void CamadaDeAplicacaoTransmissora(string mensagem)
 
 		converte(mensagem, quadro, j);
 
-		cout << mensagem[j] << " se tornou ";
-
-		for (i = j * 8; i < (j * 8 + 8); i++)
-		{
-
-			cout << quadro[i];
-		}
-
-		cout << endl;
 	}
-
-	for (j = 0; j < tamanho_quadro_final; j++)
-	{
-
-		cout << quadro[j];
-	}
-
-	cout << endl;
-	/*
-		converte(mensagem, quadro, 1);
-
-		for(i = 0; i < 8 ; i++){
+	for(i = 0; i < tamanho_quadro_final; i++){
 
 		cout << quadro[i];
 
-		}
+	}
+	cout << endl << endl;
 
-	cout << endl;
-	*/
-	//converte(mensagem, quadro, 1);
+quadro[tamanho_quadro_final] = 2;
 
-	quadro[tamanho_quadro_final] = 2;
-
-	CamadaFisicaTransmissora(quadro);
+CamadaFisicaTransmissora(quadro);
 
 } // fim do metodo
 
 void CamadaFisicaTransmissora(int quadro[])
 {
 
+	cout << "\033[1;34mCamada Fisica Transmissora: \033[0m\n";
 	int tipoDeCodificacao = CODIFICACAO;
 
 	int i = 0;
-
-	while (1)
-	{
-
-		if (quadro[i] == 2)
-		{
-			cout << "achei o final" << endl;
-			cout << i << endl;
-			break;
-		}
-		i++;
-	}
-
 	int tamanho_fluxo;
-	tamanho_fluxo = i * 2;
+	tamanho_fluxo = find_size(quadro) * 2;
 
 	int *fluxoBrutoDeBits;
 
 	fluxoBrutoDeBits = new (nothrow) int[tamanho_fluxo];
 
-	cout << tamanho_fluxo << endl;
-
 	switch (tipoDeCodificacao)
 	{
-	case 0: //codificacao binaria
+		case 0: //codificacao binaria
 
 		fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoBinaria(quadro);
 
-		cout << "Camada Fisica Transmissora: ";
+		cout << "\033[1;35mCodificacao Binaria: \033[0m\n";
 		for (i = 0; i < tamanho_fluxo; i++)
 		{
 			cout << fluxoBrutoDeBits[i];
 		}
-		cout << endl;
+		cout << endl << endl;
 
 		break;
 
-	case 1: //codificacao manchester
+		case 1: //codificacao manchester
 
 		fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchester(quadro);
 
-		cout << "Camada Fisica Transmissora: ";
+		cout << "\033[1;35mCodificacao Manchester: \033[0m\n";
 		for (i = 0; i < tamanho_fluxo; i++)
 		{
 			cout << fluxoBrutoDeBits[i];
 		}
-		cout << endl;
+		cout << endl << endl;
 
 		break;
 
-	case 2: //codificacao manchester diferencial
+		case 2: //codificacao manchester diferencial
 
 		fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(quadro);
 
-		cout << "Camada Fisica Transmissora: ";
+		cout << "\033[1;35mCodificacao Manchester Diferencial: \033[0m\n";
 		for (i = 0; i < tamanho_fluxo; i++)
 		{
 			cout << fluxoBrutoDeBits[i];
 		}
-		cout << endl;
+		cout << endl << endl;
 
 		break;
 
@@ -212,22 +175,9 @@ int *CamadaFisicaTransmissoraCodificacaoManchester(int quadro[])
 	// implementacao do algoritmo
 
 	int i = 0;
-
-	while (1)
-	{
-
-		if (quadro[i] == 2)
-		{
-			cout << "achei o final" << endl;
-			cout << i << endl;
-			break;
-		}
-		i++;
-	}
-
 	int tamanho_fluxo;
+	i = find_size(quadro);
 	tamanho_fluxo = i * 2;
-	cout << tamanho_fluxo << endl;
 
 	int *fluxoCodificado;
 
@@ -258,16 +208,6 @@ int *CamadaFisicaTransmissoraCodificacaoManchester(int quadro[])
 		}
 	}
 
-	cout << endl;
-
-	cout << "Codificação Manchester: ";
-
-	for (j = 0; j < tamanho_fluxo; j++)
-	{
-		cout << fluxoCodificado[j];
-	}
-	cout << endl;
-
 	fluxoCodificado[tamanho_fluxo] = 2;
 
 	//int tamanho_quadro = sizeof(quadro);
@@ -282,27 +222,10 @@ int *CamadaFisicaTransmissoraCodificacaoBinaria(int quadro[])
 {
 	// implementacao do algoritmo
 
-	cout << "binarior" << endl;
-
 	int i = 0;
-
-	while (1)
-	{
-
-		cout << quadro[i] << endl;
-
-		if (quadro[i] == 2)
-		{
-			cout << "achei o final" << endl;
-			cout << i << endl;
-			break;
-		}
-		i++;
-	}
-
 	int tamanho_fluxo;
+	i = find_size(quadro);
 	tamanho_fluxo = i * 2;
-	cout << tamanho_fluxo << endl;
 
 	int *fluxoCodificado;
 
@@ -332,27 +255,10 @@ int *CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int quadro[])
 {
 	// implementacao do algoritmo
 
-	cout << "oi, manchesto diferetne " << endl;
-
 	int i = 0;
-
-	while (1)
-	{
-
-		cout << quadro[i] << endl;
-
-		if (quadro[i] == 2)
-		{
-			cout << "achei o final" << endl;
-			cout << i << endl;
-			break;
-		}
-		i++;
-	}
-
 	int tamanho_fluxo;
+	i = find_size(quadro);
 	tamanho_fluxo = i * 2;
-	cout << tamanho_fluxo << endl;
 
 	int *fluxoCodificado;
 
@@ -386,9 +292,6 @@ int *CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int quadro[])
 
 	for (j = 0; j < i; j++)
 	{
-
-		cout << quadro[j] << endl;
-
 		if (quadro[j] == 0)
 		{
 
@@ -441,29 +344,15 @@ void MeioDeComunicacao(int fluxoBrutodeBits[])
 
 	int i = 0;
 
-	cout << "comunicandooooooo" << endl;
+	cout << "\033[1;33mMeio de Transmissao\033[0m\n";
 
-	while (1)
-	{
-
-		if (fluxoBrutodeBits[i] == 2)
-		{
-			cout << "achei o final" << endl;
-			cout << i << endl;
-			break;
-		}
-		i++;
-	}
-
-	int tamanho = i;
+	int tamanho = find_size(fluxoBrutodeBits);
 
 	int *fluxoBrutoDeBitsPontoA;
 	int *fluxoBrutoDeBitsPontoB;
 
 	fluxoBrutoDeBitsPontoA = new (nothrow) int[tamanho];
 	fluxoBrutoDeBitsPontoB = new (nothrow) int[tamanho];
-
-	//strcpy(fluxoBrutoDeBitsPontoA, fluxoBrutodeBits);
 
 	for (i = 0; i < tamanho; i++)
 	{
@@ -473,7 +362,6 @@ void MeioDeComunicacao(int fluxoBrutodeBits[])
 	for (i = 0; i < tamanho; i++)
 	{
 		fluxoBrutoDeBitsPontoB[i] = fluxoBrutoDeBitsPontoA[i];
-		cout << fluxoBrutoDeBitsPontoB[i];
 	}
 	cout << endl;
 
@@ -485,62 +373,53 @@ void MeioDeComunicacao(int fluxoBrutodeBits[])
 void CamadaFisicaReceptora(int quadro[])
 {
 
-	cout << "recebendooooo" << endl;
+	cout << "\033[1;34mCamada Fisica Receptora\033[0m\n";
 
 	int tipoDeDecodificacao = CODIFICACAO;
 
 	int i = 0;
-
-	while (1)
-	{
-
-		if (quadro[i] == 2)
-		{
-			cout << "achei o final" << endl;
-			break;
-		}
-		i++;
-	}
-
+	i = find_size(quadro);
 	int *fluxoBrutoDeBits;
 
 	fluxoBrutoDeBits = new (nothrow) int[i];
 
-	cout << i << endl;
-
 	switch (tipoDeDecodificacao)
 	{
 
-	case 0:
+		case 0:
 
 		fluxoBrutoDeBits = CamadaFisicaReceptoraDecodificacaoBinaria(quadro);
 
+		cout << "\033[1;35mDecodificacao Binaria: \033[0m\n";
 		for (int j = 0; j < i; j++)
 		{
 			cout << fluxoBrutoDeBits[j];
 		}
-		cout << endl;
+		cout << endl << endl;
 
 		break;
-	case 1:
+		case 1:
 
 		fluxoBrutoDeBits = CamadaFisicaReceptoraDecodificacaoManchester(quadro);
 
+		cout << "\033[1;35mDecodificacao Manchester: \033[0m\n";
 		for (int j = 0; j < i; j++)
 		{
 			cout << fluxoBrutoDeBits[j];
 		}
-		cout << endl;
+		cout << endl << endl;
 
 		break;
-	case 2:
+		case 2:
+
 		fluxoBrutoDeBits = CamadaFisicaReceptoraDecodificacaoManchesterDiferencial(quadro);
 
+		cout << "\033[1;35mDecodificacao Manchester Diferencial: \033[0m\n";
 		for (int j = 0; j < i; j++)
 		{
 			cout << fluxoBrutoDeBits[j];
 		}
-		cout << endl;
+		cout << endl << endl;
 
 		break;
 	}
@@ -551,33 +430,16 @@ void CamadaFisicaReceptora(int quadro[])
 int *CamadaFisicaReceptoraDecodificacaoBinaria(int quadro[])
 {
 
-	cout << "decod binaria" << endl;
-
 	return quadro;
 }
 
 int *CamadaFisicaReceptoraDecodificacaoManchester(int quadro[])
 {
 
-	cout << "decodificandoooooo" << endl;
-
 	int i = 0;
-
-	while (1)
-	{
-
-		if (quadro[i] == 2)
-		{
-			cout << "achei o final" << endl;
-			cout << i << endl;
-			break;
-		}
-		i++;
-	}
-
 	int tamanho_fluxo;
+	i = find_size(quadro);
 	tamanho_fluxo = i;
-	cout << tamanho_fluxo << endl;
 
 	int *fluxoDecodificado;
 
@@ -614,41 +476,19 @@ int *CamadaFisicaReceptoraDecodificacaoManchester(int quadro[])
 	//011110100110000101110000
 	//011110100110000101110000
 
-	cout << "Fluxo decodificado manchester:" << endl;
-	for (j = 0; j < i; j++)
-	{
-		cout << fluxoDecodificado[j];
-	}
-	cout << endl;
-
 	return fluxoDecodificado;
 }
 
 void CamadaDeAplicacaoReceptora(int quadro[])
 {
 
+	cout << "\033[1;34mCamada de Aplicação Receptora\033[0m\n";
 	// transformando em string
 
 	int i = 0;
-
-	while (1)
-	{
-
-		if (quadro[i] == 2)
-		{
-			cout << "achei o final" << endl;
-			cout << i << endl;
-			break;
-		}
-		i++;
-	}
-
+	i = find_size(quadro);
 	int tamanho_quadro = i;
 	int tamanho_mensagem_ascii = i / 2;
-
-	cout << "fazendo virar string, CamadaDeAplicacaoReceptora" << endl;
-
-	cout << tamanho_mensagem_ascii << endl;
 
 	int *fluxoFinal;
 
@@ -666,7 +506,7 @@ void CamadaDeAplicacaoReceptora(int quadro[])
 		j++;
 	}
 
-	cout << endl;
+	cout << endl << endl;
 
 	// reverse bitset
 
@@ -674,9 +514,6 @@ void CamadaDeAplicacaoReceptora(int quadro[])
 
 	int decimal = 0;
 	int y;
-
-	cout << "tamanho do da mensagem: " << (tamanho_mensagem_ascii / 8) << endl;
-
 	// 01111010
 
 	for (i = 0; i < (tamanho_mensagem_ascii / 8); i++)
@@ -698,41 +535,25 @@ void CamadaDeAplicacaoReceptora(int quadro[])
 			y++;
 		}
 
-		cout << decimal << endl;
-
 		mensagem.push_back((char)decimal);
 	}
-
-	cout << mensagem << endl;
 
 	AplicacaoReceptora(mensagem);
 }
 
 void AplicacaoReceptora(string mensagem)
 {
-	cout << "A mensagem recebida foi: " << mensagem << endl;
+	cout << "\033[1;34mAplicacao Receptora\033[0m\n";
+	cout << "\033[1;32mA mensagem recebida foi: \033[0m";
+	cout << mensagem << endl;
 }
 
 int *CamadaFisicaReceptoraDecodificacaoManchesterDiferencial (int quadro[]){
-	cout << "oi\n";
 
 	int i = 0;
-
-	while (1)
-	{
-
-		if (quadro[i] == 2)
-		{
-			cout << "achei o final" << endl;
-			cout << i << endl;
-			break;
-		}
-		i++;
-	}
-
+	i = find_size(quadro);
 	int tamanho_fluxo;
 	tamanho_fluxo = i;
-	cout << tamanho_fluxo << endl;
 
 	int *fluxoDecodificado;
 
@@ -741,15 +562,6 @@ int *CamadaFisicaReceptoraDecodificacaoManchesterDiferencial (int quadro[]){
 	int j, x;
 	x = 0;
 
-	cout << "Quadro recebido\n"; 
-
-	for (int q = 0; q < i; q++)
-	{
-		cout << quadro[q];
-	}
-
-	cout << "\n";
-
 	int passado[2];
 
 	passado[0] = 0;
@@ -757,8 +569,6 @@ int *CamadaFisicaReceptoraDecodificacaoManchesterDiferencial (int quadro[]){
 
 	for (j = 0; j < tamanho_fluxo; j=j+2)
 	{
-
-		cout << quadro[j] << endl;
 
 		if ((quadro[j] == 0 && quadro[j+1] == 1))
 		{
@@ -777,44 +587,35 @@ int *CamadaFisicaReceptoraDecodificacaoManchesterDiferencial (int quadro[]){
 				x++;
 
 				passado[0] = 0;
-				passado[1] = 1; 
+				passado[1] = 1;
 
 			}
 		}
 
 		else if ((quadro[j] == 1 && quadro[j+1] == 0))
-			{
-				if((passado[0] == 1 && passado[1] == 0)){
+		{
+			if((passado[0] == 1 && passado[1] == 0)){
 
-					fluxoDecodificado[x] = 0;
-					x++;
-					fluxoDecodificado[x] = 0;
-					x++;
+				fluxoDecodificado[x] = 0;
+				x++;
+				fluxoDecodificado[x] = 0;
+				x++;
 
-				}else if((passado[0] == 0 && passado[1] == 1)){
+			}else if((passado[0] == 0 && passado[1] == 1)){
 
-					fluxoDecodificado[x] = 1;
-					x++;
-					fluxoDecodificado[x] = 1;
-					x++;
+				fluxoDecodificado[x] = 1;
+				x++;
+				fluxoDecodificado[x] = 1;
+				x++;
 
-					passado[0] = 1;
-					passado[1] = 0; 
+				passado[0] = 1;
+				passado[1] = 0;
 
-				}
-				
-		}	
-		
+			}
+
+		}
+
 	}
-
-	cout << "olha q top o fluxo decodificado: "<< endl;
-	
-
-	for(j = 0 ; j < tamanho_fluxo ; j++){
-		cout << fluxoDecodificado[j];  
-	}
-
-	cout << endl;
 
 	fluxoDecodificado[tamanho_fluxo] = 2;
 
