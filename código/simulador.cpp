@@ -9,6 +9,10 @@ using namespace std;
 
 void AplicacaoTransmissora(void);
 
+// https://github.com/gui1080/TR1_Trabalho_Camada_Fisica
+
+//MAIN
+//--------------------------------------------------------------------------------------------
 int main(void){
 
   AplicacaoTransmissora();
@@ -16,6 +20,9 @@ int main(void){
   return 0;
 
 } // fim do metodo main
+
+// APLICAÇÃO QUE TRANSMITE 
+//--------------------------------------------------------------------------------------------
 
 void AplicacaoTransmissora(void){
   string mensagem;
@@ -30,4 +37,5 @@ void AplicacaoTransmissora(void){
 
   // chama a proxima camada
   CamadaDeAplicacaoTransmissora(mensagem);
-}
+
+} // fim da simulação da Aplicação Transmissora

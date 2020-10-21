@@ -11,20 +11,27 @@ using namespace std;
 
 #include "CamadaFisica.h"
 
+// https://github.com/gui1080/TR1_Trabalho_Camada_Fisica
+
+// FUNÇÕES AUXILIARES
+//--------------------------------------------------------------------------------------------
+
 int find_size(int quadro[]){
 
 	int i = 0;
 	while (1)
 	{
 
-		if (quadro[i] == 2)
-		{
+		if (quadro[i] == 2)     // utilizou-se a convenção de o próximo elemento dps do último elemento
+		{						// util do array é 2 pra demarcar o final
 			break;
 		}
 		i++;
 	}
+	
+	// se conta até achar o 2 retorna o tamanho
 
-return i;
+	return i;
 }
 
 void converte(string mensagem, int quadro[], int pos)
@@ -32,22 +39,23 @@ void converte(string mensagem, int quadro[], int pos)
 
 	int x, j, i;
 
-	j = ((pos * 8) - 1) + 8;
+	j = ((pos * 8) - 1) + 8;	// cálculo da posição no array transformado em binário 
 
 	bitset<8> set(mensagem[pos]);
 
 	if (mensagem[pos] == ' ')
 	{
 
-		// espaço, caso especial
+		// um espaço vazio teve que virar um caso especial
 		set.reset();   // todos são zero
 		set.set(5, 1); // 32 == espaço
+
 	}
 
 	for (i = 0; i < 8; i++)
 	{
 
-		if (set.test(i))
+		if (set.test(i))		// testa se é 1 ou 0, e aloca de acordo no resultado da conversão como int
 		{
 
 			quadro[j] = 1;
@@ -66,30 +74,26 @@ void converte(string mensagem, int quadro[], int pos)
 	return;
 }
 
+// TRANSMISSÃO 
+//--------------------------------------------------------------------------------------------
+
 void CamadaDeAplicacaoTransmissora(string mensagem)
 {
 
 	// int quadro[] = mensagem
 	// trabalhando com bits
-	// chama a proxima camada
 
-	// VAMOS PASSAR COM UM FOR POR CADA LETRA
-	// CADA LETRA = 2 HEXADECIMAIS = 8 BITS
-	// O ARRAY DE INTEIRO VAI SER TAMANHO str.size() * 8, aloca dinamicamente pra ficar legal
-	// usa funcao pronta pra pegar cada letra e traduzir pra hexa, que traduz pra binario (utf-8)
-
-	// cout<<"What is the letter you wanna convert?"<<endl;
-	// cin >> letter;
-	// cout << bitset<8>(letter).to_string() << endl;
-
-	// int const tamanho = 8*(mensagem.size());
 	cout << "\033[1;34mCamada de Aplicacao Transmissora\033[0m\n";
 
 	int i, j, x;
 	int tamanho_quadro_final = 8 * (mensagem.length());
 
 	int *quadro, *letra_atual;
+
 	quadro = new (nothrow) int[tamanho_quadro_final];
+
+	// se aloca o tamanho da mensagem em binário com tamanho do número de letras  * 8
+	// se itera e converte letra a letra
 
 	for (j = 0; j < mensagem.size(); j++)
 	{
@@ -102,11 +106,12 @@ void CamadaDeAplicacaoTransmissora(string mensagem)
 		cout << quadro[i];
 
 	}
+	
 	cout << endl << endl;
 
-quadro[tamanho_quadro_final] = 2;
+	quadro[tamanho_quadro_final] = 2;
 
-CamadaFisicaTransmissora(quadro);
+	CamadaFisicaTransmissora(quadro);
 
 } // fim do metodo
 
@@ -114,11 +119,11 @@ void CamadaFisicaTransmissora(int quadro[])
 {
 
 	cout << "\033[1;34mCamada Fisica Transmissora: \033[0m\n";
-	int tipoDeCodificacao = CODIFICACAO;
+	int tipoDeCodificacao = CODIFICACAO;	// utilizou-se um define pra facilitar a mudança da codificação/decodificação
 
 	int i = 0;
 	int tamanho_fluxo;
-	tamanho_fluxo = find_size(quadro) * 2;
+	tamanho_fluxo = find_size(quadro) * 2;  // convenção: o fluxo vai ter o dobro de quantidade de 0s e 1 por conta da codificação manchester e manchester diferencial 
 
 	int *fluxoBrutoDeBits;
 
@@ -168,11 +173,14 @@ void CamadaFisicaTransmissora(int quadro[])
 	} // fim do switch/case
 
 	MeioDeComunicacao(fluxoBrutoDeBits);
+
 }
+
+// CODIFICAÇÃO 
+//--------------------------------------------------------------------------------------------
 
 int *CamadaFisicaTransmissoraCodificacaoManchester(int quadro[])
 {
-	// implementacao do algoritmo
 
 	int i = 0;
 	int tamanho_fluxo;
@@ -192,6 +200,8 @@ int *CamadaFisicaTransmissoraCodificacaoManchester(int quadro[])
 		// xor 00 e 01 = 01
 		// xor 11 e 01 = 10
 		// clock = 01 01 01 01 ...
+
+		// se temos 00, vira 01 por conta do xor
 		if (quadro[j] == 0)
 		{
 			fluxoCodificado[x] = 0;
@@ -199,6 +209,8 @@ int *CamadaFisicaTransmissoraCodificacaoManchester(int quadro[])
 			fluxoCodificado[x] = 1;
 			x++;
 		}
+
+		// se temos 11, vira 10 por conta do xor 
 		if (quadro[j] == 1)
 		{
 			fluxoCodificado[x] = 1;
@@ -208,19 +220,17 @@ int *CamadaFisicaTransmissoraCodificacaoManchester(int quadro[])
 		}
 	}
 
-	fluxoCodificado[tamanho_fluxo] = 2;
+	fluxoCodificado[tamanho_fluxo] = 2; // delimita o final
 
-	//int tamanho_quadro = sizeof(quadro);
-
-	//cout << "tamanho:" << tamanho_quadro << endl;
-
-	return fluxoCodificado;
+	return fluxoCodificado; // passa a codificação a diante
 
 } // fim do metodo CamadaFisicaTransmissoraCodificacaoManchester
 
 int *CamadaFisicaTransmissoraCodificacaoBinaria(int quadro[])
 {
-	// implementacao do algoritmo
+
+	// basicamente se passa o fluxo bruto para frente, mas cada 0 e cada 1 é duplicado
+	// para satisfazer a mesma função que converterá as outras codificações de volta
 
 	int i = 0;
 	int tamanho_fluxo;
@@ -247,13 +257,12 @@ int *CamadaFisicaTransmissoraCodificacaoBinaria(int quadro[])
 
 	fluxoCodificado[tamanho_fluxo] = 2;
 
-	return fluxoCodificado;
+	return fluxoCodificado; // passa a diante o fluxo codificado
 
 } // fim do metodo CamadaFisicaTransmissoraCodificacaoBinaria
 
 int *CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int quadro[])
 {
-	// implementacao do algoritmo
 
 	int i = 0;
 	int tamanho_fluxo;
@@ -267,32 +276,27 @@ int *CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int quadro[])
 	int j;
 	int x = 0;
 
-	// 0  1  0  1  1  0  0
-	// 00 11 00 11 11 00 00
-	// 01 10 10 01 10 10 10
+	// Na codificação manchester diferencial, se importa apenas as mudanças de 0 pra 1 ou 1 pra 1
+	// um exemplo:
 
 	// z
 	// 0  1  1  1  1  0  1  0
 	// 00 11 11 11 11 00 11 00
-	// 01 10 01 10 01 01 10 10
+	// 01 10 01 10 01 01 10 10 
 
-	// logica inversa
+	// o resultado fica em termos de 01 e 10 pois se mantém a informação do clock que é 01 01 01...
 
-	// 00 11 11 11 11 00 11 00
-
-	// 01 10 01 10 01 10 0
-
-	// 0  1  1  0  0  0  0  1
-	// 01 10 01 10 01 01 01 01 01 10
+	// se o primeiro termo a ser codificado é 0, o resultado sai igual ao clock
+	// se o primeiro termo a ser codificado é 1, o resultado é 10 pra indicar que houve mudança, a referencia seria o clock nesse caso
 
 	int passado[2];
 
 	passado[0] = 0;
-	passado[1] = 1;
+	passado[1] = 1; // começa com 01 por conta da referencia do clock
 
 	for (j = 0; j < i; j++)
 	{
-		if (quadro[j] == 0)
+		if (quadro[j] == 0) // se faz a comparação e se guarda se antes havia um 01 ou 10
 		{
 
 			fluxoCodificado[x] = passado[0];
@@ -333,14 +337,23 @@ int *CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int quadro[])
 		}
 	}
 
-	fluxoCodificado[tamanho_fluxo] = 2;
+	fluxoCodificado[tamanho_fluxo] = 2; // se delimita o final
 
-	return fluxoCodificado;
+	return fluxoCodificado; // passa a codificação a diante
 
 } // fim do metodo CamadaFisicaTransmissoraCodificacaoManchesterDiferencial
 
+// MEIO
+//--------------------------------------------------------------------------------------------
+
 void MeioDeComunicacao(int fluxoBrutodeBits[])
 {
+
+
+	// essa função aloca dinamicamente os fluxos de bits,
+	// copia um fluxo A para um fluxo B e passa o B adiante
+	// para concretizar uma simulação entre parte transmissora e receptora
+
 
 	int i = 0;
 
@@ -354,12 +367,12 @@ void MeioDeComunicacao(int fluxoBrutodeBits[])
 	fluxoBrutoDeBitsPontoA = new (nothrow) int[tamanho];
 	fluxoBrutoDeBitsPontoB = new (nothrow) int[tamanho];
 
-	for (i = 0; i < tamanho; i++)
+	for (i = 0; i < tamanho; i++) // copia original pro A
 	{
 		fluxoBrutoDeBitsPontoA[i] = fluxoBrutodeBits[i];
 	}
 
-	for (i = 0; i < tamanho; i++)
+	for (i = 0; i < tamanho; i++) // copia A pro B
 	{
 		fluxoBrutoDeBitsPontoB[i] = fluxoBrutoDeBitsPontoA[i];
 	}
@@ -370,18 +383,21 @@ void MeioDeComunicacao(int fluxoBrutodeBits[])
 	CamadaFisicaReceptora(fluxoBrutoDeBitsPontoB);
 }
 
+// DECODIFICAÇÃO 
+//--------------------------------------------------------------------------------------------
+
 void CamadaFisicaReceptora(int quadro[])
 {
 
 	cout << "\033[1;34mCamada Fisica Receptora\033[0m\n";
 
-	int tipoDeDecodificacao = CODIFICACAO;
+	int tipoDeDecodificacao = CODIFICACAO; // utilizou-se este define para facilitar a mudança entre codificações e decodificações
 
 	int i = 0;
 	i = find_size(quadro);
 	int *fluxoBrutoDeBits;
 
-	fluxoBrutoDeBits = new (nothrow) int[i];
+	fluxoBrutoDeBits = new (nothrow) int[i]; // alocação dinâmica 
 
 	switch (tipoDeDecodificacao)
 	{
@@ -424,11 +440,15 @@ void CamadaFisicaReceptora(int quadro[])
 		break;
 	}
 
-	CamadaDeAplicacaoReceptora(fluxoBrutoDeBits);
+	CamadaDeAplicacaoReceptora(fluxoBrutoDeBits); // passa a diante o fluxo decodificado 
 }
 
 int *CamadaFisicaReceptoraDecodificacaoBinaria(int quadro[])
 {
+
+	// acabou que nesta camada o que deve ser decodificado já está pronto para ser um input
+	// da mudança de binário de volta para letra como o resultado final das outras
+	// decodificações 
 
 	return quadro;
 }
@@ -448,11 +468,19 @@ int *CamadaFisicaReceptoraDecodificacaoManchester(int quadro[])
 	int j, x;
 	x = 0;
 
+	// voltamos o xor da codificação
+
+	// o receptor sabe que 01 xor algo tem que ser 00
+	// o receptor sabe que 10 xor algo tem que ser 11
+	// se recupera o clock 01 01 01...
+
+
+	// xor 01 e 01 = 00
+	// xor 10 e 01 = 11	
+
 	for (j = 0; j < i; j++)
 	{
 
-		// xor 01 e 01 = 00
-		// xor 10 e 01 = 11
 		// clock = 01 01 01 01 ...
 		if ((quadro[j] == 0) && (quadro[j + 1] == 1))
 		{
@@ -470,14 +498,97 @@ int *CamadaFisicaReceptoraDecodificacaoManchester(int quadro[])
 		}
 		j++;
 
-		fluxoDecodificado[tamanho_fluxo] = 2;
 	}
 
-	//011110100110000101110000
-	//011110100110000101110000
+	fluxoDecodificado[tamanho_fluxo] = 2; // delimita o final e passa o fluxo decodificado para frente
 
 	return fluxoDecodificado;
 }
+
+int *CamadaFisicaReceptoraDecodificacaoManchesterDiferencial (int quadro[]){
+
+	int i = 0;
+	i = find_size(quadro);
+	int tamanho_fluxo;
+	tamanho_fluxo = i;
+
+	int *fluxoDecodificado;
+
+	fluxoDecodificado = new (nothrow) int[tamanho_fluxo];
+
+	int j, x;
+	x = 0;
+
+	int passado[2];
+
+	// outra vez, conclui-se que o clock é 01 01 01...
+	// a referencia passado começa 01 para delimitar esse passado
+	// se a primeira comparação conclui que 01 = 01, temos um 0
+	// passado continua 01, comparações continuam
+	// se a primeira comparação conclui que 01 != 10, temos um 1
+	// passado vira 10, comparações continuam
+	// no final se tem um vetor de inteiros com 0s e 1s como originalmente
+
+	passado[0] = 0;
+	passado[1] = 1;
+
+	for (j = 0; j < tamanho_fluxo; j=j+2)
+	{
+
+		if ((quadro[j] == 0 && quadro[j+1] == 1)) // temos 01?
+		{
+			if((passado[0] == 0 && passado[1] == 1)){ // era 01?
+
+				fluxoDecodificado[x] = 0; // não mudou, é 0
+				x++;
+				fluxoDecodificado[x] = 0;
+				x++;
+
+			}else if((passado[0] == 1 && passado[1] == 0)){ // era 10?
+
+				fluxoDecodificado[x] = 1;
+				x++;
+				fluxoDecodificado[x] = 1; // mudou, é 1
+				x++;
+
+				passado[0] = 0; // update
+				passado[1] = 1;
+
+			}
+		}
+
+		else if ((quadro[j] == 1 && quadro[j+1] == 0)) // temos 10?
+		{
+			if((passado[0] == 1 && passado[1] == 0)){ // era 10?
+
+				fluxoDecodificado[x] = 0;
+				x++;
+				fluxoDecodificado[x] = 0; // não mudou, é zero
+				x++;
+
+			}else if((passado[0] == 0 && passado[1] == 1)){ // era 01?
+
+				fluxoDecodificado[x] = 1;
+				x++;
+				fluxoDecodificado[x] = 1; // mudou, é 1
+				x++;
+
+				passado[0] = 1; // update
+				passado[1] = 0;
+
+			}
+
+		}
+
+	}
+
+	fluxoDecodificado[tamanho_fluxo] = 2;
+
+	return fluxoDecodificado;
+}
+
+// RECEPÇÃO 
+//--------------------------------------------------------------------------------------------
 
 void CamadaDeAplicacaoReceptora(int quadro[])
 {
@@ -508,13 +619,14 @@ void CamadaDeAplicacaoReceptora(int quadro[])
 
 	cout << endl << endl;
 
-	// reverse bitset
-
 	string mensagem;
 
 	int decimal = 0;
 	int y;
-	// 01111010
+
+	// se acumula o binário em um inteiro
+	// faz o cast daquele inteiro pra ascii
+	// dá push na string
 
 	for (i = 0; i < (tamanho_mensagem_ascii / 8); i++)
 	{
@@ -538,86 +650,19 @@ void CamadaDeAplicacaoReceptora(int quadro[])
 		mensagem.push_back((char)decimal);
 	}
 
-	AplicacaoReceptora(mensagem);
+	AplicacaoReceptora(mensagem); // passamos a string a diante
 }
 
 void AplicacaoReceptora(string mensagem)
 {
+
+	// se recebe a string no resultado!
+
 	cout << "\033[1;34mAplicacao Receptora\033[0m\n";
 	cout << "\033[1;32mA mensagem recebida foi: \033[0m";
 	cout << mensagem << endl;
+
+	// fim!
+
 }
 
-int *CamadaFisicaReceptoraDecodificacaoManchesterDiferencial (int quadro[]){
-
-	int i = 0;
-	i = find_size(quadro);
-	int tamanho_fluxo;
-	tamanho_fluxo = i;
-
-	int *fluxoDecodificado;
-
-	fluxoDecodificado = new (nothrow) int[tamanho_fluxo];
-
-	int j, x;
-	x = 0;
-
-	int passado[2];
-
-	passado[0] = 0;
-	passado[1] = 1;
-
-	for (j = 0; j < tamanho_fluxo; j=j+2)
-	{
-
-		if ((quadro[j] == 0 && quadro[j+1] == 1))
-		{
-			if((passado[0] == 0 && passado[1] == 1)){
-
-				fluxoDecodificado[x] = 0;
-				x++;
-				fluxoDecodificado[x] = 0;
-				x++;
-
-			}else if((passado[0] == 1 && passado[1] == 0)){
-
-				fluxoDecodificado[x] = 1;
-				x++;
-				fluxoDecodificado[x] = 1;
-				x++;
-
-				passado[0] = 0;
-				passado[1] = 1;
-
-			}
-		}
-
-		else if ((quadro[j] == 1 && quadro[j+1] == 0))
-		{
-			if((passado[0] == 1 && passado[1] == 0)){
-
-				fluxoDecodificado[x] = 0;
-				x++;
-				fluxoDecodificado[x] = 0;
-				x++;
-
-			}else if((passado[0] == 0 && passado[1] == 1)){
-
-				fluxoDecodificado[x] = 1;
-				x++;
-				fluxoDecodificado[x] = 1;
-				x++;
-
-				passado[0] = 1;
-				passado[1] = 0;
-
-			}
-
-		}
-
-	}
-
-	fluxoDecodificado[tamanho_fluxo] = 2;
-
-	return fluxoDecodificado;
-}
