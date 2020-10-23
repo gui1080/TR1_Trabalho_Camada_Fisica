@@ -1,3 +1,5 @@
+// SIMULADOR MANCHESTO
+
 #include <string>
 using namespace std;
 
