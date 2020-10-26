@@ -230,7 +230,7 @@ int *CamadaFisicaTransmissoraCodificacaoBinaria(int quadro[])
 {
 
 	// basicamente se passa o fluxo bruto para frente, mas cada 0 e cada 1 é duplicado
-	// para satisfazer a mesma função que converterá as outras codificações de volta
+	// para satisfazer a mesma função que converterá as outras codificações de volta (clock 01 01 01...)
 
 	int i = 0;
 	int tamanho_fluxo;
